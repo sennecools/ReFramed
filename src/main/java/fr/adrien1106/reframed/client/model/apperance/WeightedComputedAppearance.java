@@ -30,7 +30,7 @@ public class WeightedComputedAppearance extends CamoAppearance {
     }
 
     private Appearance getAppearance(int model_id) {
-        return appearances.get(model_id).getData();
+        return appearances.get(model_id).data();
     }
 
     @Override

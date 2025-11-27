@@ -25,8 +25,13 @@ public class ReFramedScrewdriverItem extends Item {
     public ActionResult useOnBlock(ItemUsageContext context) {
         World world = context.getWorld();
         BlockPos pos = context.getBlockPos();
-        if (!(world.getBlockEntity(pos) instanceof ThemeableBlockEntity frame_entity)) return ActionResult.PASS;
+
+        if (!(world.getBlockEntity(pos) instanceof ThemeableBlockEntity frame_entity)) {
+            return ActionResult.PASS;
+        }
+
         BlockState state = world.getBlockState(pos);
+
         PlayerEntity player = context.getPlayer();
         int theme_index = state.getBlock() instanceof ReFramedDoubleBlock b
             ? b.getHitShape(
@@ -37,8 +42,8 @@ public class ReFramedScrewdriverItem extends Item {
             )
             : 1;
 
-
         BlockState theme = frame_entity.getTheme(theme_index);
+
         if (!theme.contains(Properties.AXIS)) return ActionResult.PASS;
 
         Direction.Axis axis = theme.get(Properties.AXIS);

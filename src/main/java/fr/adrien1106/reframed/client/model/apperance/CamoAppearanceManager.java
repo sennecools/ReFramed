@@ -6,7 +6,7 @@ import fr.adrien1106.reframed.ReFramed;
 import fr.adrien1106.reframed.client.ReFramedClient;
 import fr.adrien1106.reframed.client.model.DynamicBakedModel;
 import fr.adrien1106.reframed.client.model.QuadPosBounds;
-import fr.adrien1106.reframed.compat.RebakedModel;
+// import fr.adrien1106.reframed.compat.RebakedModel; // TODO: Re-enable when Continuity support is added
 import fr.adrien1106.reframed.mixin.model.WeightedBakedModelAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -41,9 +41,9 @@ import java.util.function.Function;
 public class CamoAppearanceManager {
 
 
-	protected static final SpriteIdentifier DEFAULT_SPRITE_MAIN = new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(ReFramed.MODID, "block/framed_block"));
-	protected static final SpriteIdentifier DEFAULT_SPRITE_SECONDARY = new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(ReFramed.MODID, "block/framed_accent_block"));
-	private static final SpriteIdentifier BARRIER_SPRITE_ID = new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier("minecraft:item/barrier"));
+	protected static final SpriteIdentifier DEFAULT_SPRITE_MAIN = new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, Identifier.of(ReFramed.MODID, "block/framed_block"));
+	protected static final SpriteIdentifier DEFAULT_SPRITE_SECONDARY = new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, Identifier.of(ReFramed.MODID, "block/framed_accent_block"));
+	private static final SpriteIdentifier BARRIER_SPRITE_ID = new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, Identifier.of("minecraft", "item/barrier"));
 	private static final Cache<BlockState, CamoAppearance> APPEARANCE_CACHE = CacheBuilder.newBuilder().maximumSize(2048).build();
 
 	public CamoAppearanceManager(Function<SpriteIdentifier, Sprite> spriteLookup) {
@@ -93,12 +93,13 @@ public class CamoAppearanceManager {
 			if (item && APPEARANCE_CACHE.asMap().containsKey(state)) return APPEARANCE_CACHE.getIfPresent(state);
 
 			model = dynamic_model.computeQuads(world, state, pos, theme_index);
+			// TODO: Re-enable when Continuity support is added
 			// if model isn't rebaked its just wrapped (i.e. not dynamic and may be cached)
-			if (model instanceof RebakedModel) {
-				CamoAppearance appearance = computeAppearance(model, state, !item);
-				if (item) APPEARANCE_CACHE.put(state, appearance);
-				return appearance;
-			}
+			// if (model instanceof RebakedModel) {
+			// 	CamoAppearance appearance = computeAppearance(model, state, !item);
+			// 	if (item) APPEARANCE_CACHE.put(state, appearance);
+			// 	return appearance;
+			// }
 		}
 
 		// refresh cache
@@ -130,7 +131,7 @@ public class CamoAppearanceManager {
 			);
 		}
 		List<Weighted.Present<Appearance>> appearances = weighted_model.getModels().stream()
-			.map(baked_model -> Weighted.of(getAppearance(baked_model.getData()), baked_model.getWeight().getValue()))
+			.map(baked_model -> Weighted.of(getAppearance(baked_model.data()), baked_model.getWeight().getValue()))
 			.toList();
 
 		return new WeightedComputedAppearance(
