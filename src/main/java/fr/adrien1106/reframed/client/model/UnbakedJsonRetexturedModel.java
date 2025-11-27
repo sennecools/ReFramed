@@ -30,7 +30,7 @@ public class UnbakedJsonRetexturedModel extends UnbakedRetexturedModel {
 	
 	@Nullable
 	@Override
-	public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> spriteLookup, ModelBakeSettings bake_settings, Identifier identifier) {
+	public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> spriteLookup, ModelBakeSettings bake_settings) {
 		Direction[] directions = Direction.values();
 		
 		Sprite[] sprites = new Sprite[directions.length];

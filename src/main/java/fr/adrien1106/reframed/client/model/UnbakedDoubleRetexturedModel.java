@@ -38,10 +38,10 @@ public class UnbakedDoubleRetexturedModel implements UnbakedModel {
 
     @Nullable
     @Override
-    public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> texture_getter, ModelBakeSettings model_bake_settings, Identifier identifier) {
+    public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> texture_getter, ModelBakeSettings model_bake_settings) {
         return new DoubleRetexturingBakedModel(
-            (RetexturingBakedModel) model_1.bake(baker, texture_getter, model_bake_settings, identifier),
-            (RetexturingBakedModel) model_2.bake(baker, texture_getter, model_bake_settings, identifier)
+            (RetexturingBakedModel) model_1.bake(baker, texture_getter, model_bake_settings),
+            (RetexturingBakedModel) model_2.bake(baker, texture_getter, model_bake_settings)
         );
     }
 }

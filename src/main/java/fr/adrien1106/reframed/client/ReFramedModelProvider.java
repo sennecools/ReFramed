@@ -1,9 +1,6 @@
 package fr.adrien1106.reframed.client;
 
 import fr.adrien1106.reframed.client.model.apperance.CamoAppearanceManager;
-import net.fabricmc.fabric.api.client.model.ModelProviderContext;
-import net.fabricmc.fabric.api.client.model.ModelResourceProvider;
-import net.fabricmc.fabric.api.client.model.ModelVariantProvider;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.ModelIdentifier;
@@ -18,28 +15,32 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class ReFramedModelProvider implements ModelResourceProvider, ModelVariantProvider {
+public class ReFramedModelProvider {
 	private final Map<Identifier, UnbakedModel> models = new HashMap<>();
 	private final Map<ModelIdentifier, Identifier> itemAssignments = new HashMap<>();
-	
+
 	private volatile CamoAppearanceManager appearanceManager;
-	
-	/// fabric model provider api
-	
-	@Override
-	public @Nullable UnbakedModel loadModelResource(Identifier resourceId, ModelProviderContext context) {
-		return models.get(resourceId);
-	}
-	
-	//For blocks, you can point the game directly at the custom model in the blockstate json file.
-	//Item models don't have that layer of indirection; it always wants to load the hardcoded "item:id#inventory" model.
-	//You *would* be able to create a model json for it and set the "parent" field to the custom model,
-	//but json models are never allowed to have non-json models as a parent, and frame unbaked models are not json models. Ah well.
-	//So, instead, we use a ModelVariantProvider to redirect attempts to load the item:id#inventory model.
-	@Override
-	public @Nullable UnbakedModel loadModelVariant(ModelIdentifier model, ModelProviderContext context) {
-		Identifier custom_model = itemAssignments.get(model);
-		return custom_model == null ? null : loadModelResource(custom_model, context);
+
+	/// Model resolver for the new Fabric API
+
+	public @Nullable UnbakedModel resolveModel(Object id) {
+		// First check if we have a direct model for this ID
+		if (id instanceof Identifier identifier) {
+			UnbakedModel model = models.get(identifier);
+			if (model != null) return model;
+		}
+
+		// Then check if this is a ModelIdentifier (item model) that needs redirection
+		// In 1.21.1, ModelIdentifier is a record type (not extending Identifier)
+		// The model loading system may pass ModelIdentifier objects for item models
+		if (id instanceof ModelIdentifier modelId) {
+			Identifier modelPath = itemAssignments.get(modelId);
+			if (modelPath != null) {
+				return models.get(modelPath);
+			}
+		}
+
+		return null;
 	}
 	
 	/// camo appearance manager cache

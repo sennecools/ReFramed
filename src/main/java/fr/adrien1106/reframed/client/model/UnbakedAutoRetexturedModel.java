@@ -30,7 +30,7 @@ public class UnbakedAutoRetexturedModel extends UnbakedRetexturedModel {
 	
 	@Nullable
 	@Override
-	public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> texture_getter, ModelBakeSettings bake_settings, Identifier identifier) {
+	public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> texture_getter, ModelBakeSettings bake_settings) {
 		return new RetexturingBakedModel(
 			baker.bake(parent, bake_settings),
 			ReFramedClient.HELPER.getCamoAppearanceManager(texture_getter),
