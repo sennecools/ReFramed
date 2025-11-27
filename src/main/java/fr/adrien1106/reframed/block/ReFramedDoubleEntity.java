@@ -41,8 +41,8 @@ public class ReFramedDoubleEntity extends ReFramedEntity {
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    protected void readNbt(NbtCompound nbt, net.minecraft.registry.RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(nbt, registryLookup);
 
         BlockState rendered_state = second_state;// keep previous state_key to check if rerender is needed
         second_state = NbtHelper.toBlockState(Registries.BLOCK.getReadOnlyWrapper(), nbt.getCompound(BLOCKSTATE_KEY + 2));
@@ -54,8 +54,8 @@ public class ReFramedDoubleEntity extends ReFramedEntity {
     }
 
     @Override
-    public void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
+    protected void writeNbt(NbtCompound nbt, net.minecraft.registry.RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(nbt, registryLookup);
 
         nbt.put(BLOCKSTATE_KEY + 2, NbtHelper.fromBlockState(second_state));
     }

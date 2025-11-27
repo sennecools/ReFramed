@@ -44,35 +44,36 @@ public class ReFramedEntity extends BlockEntity implements ThemeableBlockEntity 
 	}
 	
 	@Override
-	public void readNbt(NbtCompound nbt) {
-		super.readNbt(nbt);
-		
+	protected void readNbt(NbtCompound nbt, net.minecraft.registry.RegistryWrapper.WrapperLookup registryLookup) {
+		super.readNbt(nbt, registryLookup);
+
 		BlockState rendered_state = first_state; // keep previous state_key to check if rerender is needed
 		first_state = NbtHelper.toBlockState(Registries.BLOCK.getReadOnlyWrapper(), nbt.getCompound(BLOCKSTATE_KEY + 1));
 		if (nbt.contains(BITFIELD_KEY)) bit_field = nbt.getByte(BITFIELD_KEY);
-		
+
 		// Force a chunk remesh on the client if the displayed blockstate has changed
 		if(world != null && world.isClient && !Objects.equals(rendered_state, first_state))
 			ReFramed.chunkRerenderProxy.accept(world, pos);
 	}
-	
-	@Override
-	public void writeNbt(NbtCompound nbt) {
-		super.writeNbt(nbt);
 
+	@Override
+	protected void writeNbt(NbtCompound nbt, net.minecraft.registry.RegistryWrapper.WrapperLookup registryLookup) {
+		super.writeNbt(nbt, registryLookup);
 		nbt.put(BLOCKSTATE_KEY + 1, NbtHelper.fromBlockState(first_state));
 		if(bit_field != SOLIDITY_MASK) nbt.putByte(BITFIELD_KEY, bit_field);
 	}
 
 	public static @NotNull BlockState readStateFromItem(ItemStack stack, int state) {
-		NbtCompound nbt = BlockItem.getBlockEntityNbt(stack);
+		net.minecraft.component.type.NbtComponent nbtComponent = stack.get(net.minecraft.component.DataComponentTypes.BLOCK_ENTITY_DATA);
+		if(nbtComponent == null) return Blocks.AIR.getDefaultState();
+		NbtCompound nbt = nbtComponent.copyNbt();
 		if(nbt == null) return Blocks.AIR.getDefaultState();
-		
+
 		//slightly paranoid NBT handling cause you never know what mysteries are afoot with items
 		NbtElement element;
 		if(nbt.contains(BLOCKSTATE_KEY + state)) element = nbt.get(BLOCKSTATE_KEY + state);
 		else return Blocks.AIR.getDefaultState();
-		
+
 		if(!(element instanceof NbtCompound compound)) return Blocks.AIR.getDefaultState();
 		else return NbtHelper.toBlockState(Registries.BLOCK.getReadOnlyWrapper(), compound);
 	}
@@ -83,8 +84,10 @@ public class ReFramedEntity extends BlockEntity implements ThemeableBlockEntity 
 	//glowing but the copied NBT thinks glowstone dust was already added, so it refuses to accept more dust"
 	public static @Nullable BlockState getNbtLightLevel(@Nullable BlockState state, ItemStack stack) {
 		if(state == null || stack == null) return state;
-		
-		NbtCompound nbt = BlockItem.getBlockEntityNbt(stack);
+
+		net.minecraft.component.type.NbtComponent nbtComponent = stack.get(net.minecraft.component.DataComponentTypes.BLOCK_ENTITY_DATA);
+		if(nbtComponent == null) return state;
+		NbtCompound nbt = nbtComponent.copyNbt();
 		if(nbt == null) return state;
 		
 		if(state.contains(BlockProperties.LIGHT)) {
@@ -160,8 +163,8 @@ public class ReFramedEntity extends BlockEntity implements ThemeableBlockEntity 
 	}
 	
 	@Override
-	public NbtCompound toInitialChunkDataNbt() {
-		return createNbt();
+	public NbtCompound toInitialChunkDataNbt(net.minecraft.registry.RegistryWrapper.WrapperLookup registryLookup) {
+		return createNbt(registryLookup);
 	}
 	
 	protected void dispatch() {
