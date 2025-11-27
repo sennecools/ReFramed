@@ -1,10 +1,10 @@
 package fr.adrien1106.reframed.mixin;
 
-import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import fr.adrien1106.reframed.block.ReFramedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
@@ -25,14 +25,15 @@ public class BlockItemMixin {
 
     @Inject(
         method = "writeNbtToBlockEntity",
-        at = @At(
-            value = "INVOKE_ASSIGN",
-            target = "Lnet/minecraft/item/BlockItem;getBlockEntityNbt(Lnet/minecraft/item/ItemStack;)Lnet/minecraft/nbt/NbtCompound;",
-            shift = At.Shift.AFTER
-        )
+        at = @At("HEAD")
     )
-    private static void placeBlockWithOffHandCamo(World world, PlayerEntity player, BlockPos pos, ItemStack stack, CallbackInfoReturnable<Boolean> cir, @Local LocalRef<NbtCompound> compound) {
-        if (compound.get() != null
+    private static void placeBlockWithOffHandCamo(World world, PlayerEntity player, BlockPos pos, ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
+        // Check if this already has block entity data
+        NbtComponent existingData = stack.get(DataComponentTypes.BLOCK_ENTITY_DATA);
+        if (existingData != null) return;
+
+        // Check if player has valid items in both hands
+        if (player == null
             || player.getOffHandStack().isEmpty()
             || player.getMainHandStack().isEmpty()
             || !(player.getMainHandStack().getItem() instanceof BlockItem frame)
@@ -42,10 +43,13 @@ public class BlockItemMixin {
             || (world.getBlockState(pos).contains(Properties.LAYERS) && world.getBlockState(pos).get(Properties.LAYERS) > 1)
             || !Block.isShapeFullCube(block.getBlock().getDefaultState().getCollisionShape(world, pos))
         ) return;
-        NbtCompound new_comp = new NbtCompound();
+
+        // Add the camo block state to the stack's component data
+        NbtCompound nbt = new NbtCompound();
+        nbt.put(BLOCKSTATE_KEY + 1, NbtHelper.fromBlockState(block.getBlock().getDefaultState()));
+        stack.apply(DataComponentTypes.BLOCK_ENTITY_DATA, NbtComponent.DEFAULT, comp -> comp.apply(n -> n.copyFrom(nbt)));
+
         player.getOffHandStack().decrement(1);
-        new_comp.put(BLOCKSTATE_KEY + 1, NbtHelper.fromBlockState(block.getBlock().getDefaultState()));
-        compound.set(new_comp);
     }
 
 }

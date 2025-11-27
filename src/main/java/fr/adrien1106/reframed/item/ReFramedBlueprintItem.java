@@ -27,7 +27,7 @@ public class ReFramedBlueprintItem extends Item {
 
         context.getStack().decrement(1);
         ItemStack stack = ReFramed.BLUEPRINT_WRITTEN.getDefaultStack();
-        frame_entity.setStackNbt(stack);
+        frame_entity.setStackNbt(stack, world.getRegistryManager());
         context.getPlayer().giveItemStack(stack);
         world.playSound(context.getPlayer(), context.getPlayer().getBlockPos(), SoundEvents.ITEM_BOOK_PUT, SoundCategory.PLAYERS);
 
