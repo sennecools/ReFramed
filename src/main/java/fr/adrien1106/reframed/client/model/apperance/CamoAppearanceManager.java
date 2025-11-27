@@ -6,7 +6,7 @@ import fr.adrien1106.reframed.ReFramed;
 import fr.adrien1106.reframed.client.ReFramedClient;
 import fr.adrien1106.reframed.client.model.DynamicBakedModel;
 import fr.adrien1106.reframed.client.model.QuadPosBounds;
-// import fr.adrien1106.reframed.compat.RebakedModel; // TODO: Re-enable when Continuity support is added
+import fr.adrien1106.reframed.compat.RebakedModel;
 import fr.adrien1106.reframed.mixin.model.WeightedBakedModelAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -93,13 +93,12 @@ public class CamoAppearanceManager {
 			if (item && APPEARANCE_CACHE.asMap().containsKey(state)) return APPEARANCE_CACHE.getIfPresent(state);
 
 			model = dynamic_model.computeQuads(world, state, pos, theme_index);
-			// TODO: Re-enable when Continuity support is added
 			// if model isn't rebaked its just wrapped (i.e. not dynamic and may be cached)
-			// if (model instanceof RebakedModel) {
-			// 	CamoAppearance appearance = computeAppearance(model, state, !item);
-			// 	if (item) APPEARANCE_CACHE.put(state, appearance);
-			// 	return appearance;
-			// }
+			if (model instanceof RebakedModel) {
+				CamoAppearance appearance = computeAppearance(model, state, !item);
+				if (item) APPEARANCE_CACHE.put(state, appearance);
+				return appearance;
+			}
 		}
 
 		// refresh cache

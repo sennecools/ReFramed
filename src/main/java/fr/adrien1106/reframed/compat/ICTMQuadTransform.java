@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 
 public interface ICTMQuadTransform extends RenderContext.QuadTransform {
 
-    void invokePrepare(BlockRenderView view, BlockState state, BlockPos pos, Supplier<Random> random, boolean manual_culling, Function<Sprite, QuadProcessors.Slice> slice);
+    void invokePrepare(BlockRenderView view, BlockState appearanceState, BlockState state, BlockPos pos, Supplier<Random> random, RenderContext renderContext, boolean manual_culling, Function<Sprite, QuadProcessors.Slice> slice);
 
     ProcessingContextImpl getProcessingContext();
 

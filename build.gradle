@@ -37,8 +37,6 @@ sourceSets {
 	main {
 		java {
 			exclude '**/compat_disabled/**'
-			exclude '**/compat/ICTMQuadTransform.java'
-			exclude '**/compat/RebakedModel.java'
 			exclude '**/mixin/IAxiomChunkedBlockRegionMixin.java'
 		}
 		resources {
@@ -109,12 +107,10 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// Indium and sodium for sodium support
-	// TODO: Re-enable after finding correct versions
-	// modCompileOnly "maven.modrinth:indium:${project.indium_version}+mc${project.minecraft_version}"
-	// modCompileOnly "maven.modrinth:sodium:mc${project.minecraft_version}-${project.sodium_version}"
-//	modRuntimeOnly "maven.modrinth:indium:${project.indium_version}+mc${project.minecraft_version}"
-//	modRuntimeOnly "maven.modrinth:sodium:mc${project.minecraft_version}-${project.sodium_version}"
+	// Sodium for render optimization (includes Fabric Rendering API support)
+	modCompileOnly "maven.modrinth:sodium:mc${project.minecraft_version}-${project.sodium_version}"
+	modRuntimeOnly "maven.modrinth:sodium:mc${project.minecraft_version}-${project.sodium_version}"
+	// Note: Indium no longer needed - Sodium 0.6+ has Fabric Rendering API built-in
 
 	// Athena for connected textures
 	// TODO: Re-enable after finding correct versions
@@ -122,9 +118,8 @@ dependencies {
 	// modRuntimeOnly "earth.terrarium.athena:athena-fabric-${project.minecraft_version}:${project.athena_version}"
 
 	// Continuity for connected textures
-	// TODO: Re-enable after finding correct versions
-	// modCompileOnly "maven.modrinth:continuity:${project.continuity_version}"
-	// modRuntimeOnly "maven.modrinth:continuity:${project.continuity_version}"
+	modCompileOnly "maven.modrinth:continuity:${project.continuity_version}"
+	modRuntimeOnly "maven.modrinth:continuity:${project.continuity_version}"
 
 	// Chipped to test athena implementation
 	// modRuntimeOnly "com.teamresourceful.resourcefullib:resourcefullib-fabric-${project.minecraft_version}:2.4.7"
@@ -144,7 +139,6 @@ processResources {
 	inputs.property "loader_version", project.loader_version
 	inputs.property "mod_id", project.mod_id
 	inputs.property "athena_version", project.athena_version
-	inputs.property "indium_version", project.indium_version
 	inputs.property "sodium_version", project.sodium_version
 	inputs.property "continuity_version", project.continuity_version
 	filteringCharset "UTF-8"
@@ -225,7 +219,7 @@ modrinth {
 	dependencies {
 		required.project "fabric-api"
 		optional.version "b1ZV3DIJ", "${project.athena_version}"
-		optional.version "Orvt0mRa", "${project.indium_version}+mc${project.minecraft_version}"
+		// Indium no longer needed - Sodium 0.6+ has Fabric Rendering API built-in
 		optional.version "1IjD5062", "${project.continuity_version}"
 	}
 }

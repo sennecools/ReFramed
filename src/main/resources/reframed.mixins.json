@@ -26,7 +26,12 @@
     "sound.BlockItemMixin",
     "sound.EntityMixin",
     "sound.LivingEntityMixin",
-    "sound.WorldRendererMixin"
+    "sound.WorldRendererMixin",
+    "compat.ContinuityModelWrappingHandlerMixin",
+    "compat.ContinuityCTMBakedModelMixin",
+    "compat.ContinuityCTMQuadTransformMixin",
+    "compat.ContinuityConnectionPredicateMixin",
+    "compat.SodiumBlockOcclusionCacheMixin"
   ],
   "injectors": {
     "defaultRequire": 1

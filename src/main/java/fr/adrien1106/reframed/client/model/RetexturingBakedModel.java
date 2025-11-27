@@ -139,7 +139,7 @@ public abstract class RetexturingBakedModel extends ForwardingBakedModel {
 			return;
 		}
 		if(theme.getBlock() == Blocks.BARRIER) return;
-		
+
 		CamoAppearance camo = appearance_manager.getCamoAppearance(world, theme, pos, theme_index, false);
 		long seed = theme.getRenderingSeed(pos);
 		int model_id = 0;
@@ -149,7 +149,15 @@ public abstract class RetexturingBakedModel extends ForwardingBakedModel {
 		MeshCacheKey key = new MeshCacheKey(hashCode(), camo, model_id);
 		// do not clutter the cache with single-use meshes
 		Mesh untintedMesh = camo.hashCode() == -1 ? transformMesh(key, state) : getRetexturedMesh(key, state);
-		
+
+		if (!theme.isOpaque()) {
+			context.pushTransform(quad -> {
+				Direction cullFace = quad.cullFace();
+				if (cullFace != null && shouldCullFrameFace(world, pos, cullFace, theme)) return false;
+				return true;
+			});
+		}
+
 		//The specific tint might vary a lot; imagine grass color smoothly changing. Trying to bake the tint into
 		//the cached mesh will pollute it with a ton of single-use meshes with only slightly different colors.
 		if(tint == 0xFFFFFFFF) {
@@ -159,6 +167,27 @@ public abstract class RetexturingBakedModel extends ForwardingBakedModel {
 			untintedMesh.outputTo(quad_emitter);
 			context.popTransform();
 		}
+
+		if (!theme.isOpaque()) {
+			context.popTransform();
+		}
+	}
+
+	private boolean shouldCullFrameFace(BlockRenderView world, BlockPos pos, Direction face, BlockState theme) {
+		BlockPos neighborPos = pos.offset(face);
+		BlockState neighborState = world.getBlockState(neighborPos);
+
+		if (world.getBlockEntity(neighborPos) instanceof ThemeableBlockEntity neighborEntity) {
+			BlockState neighborTheme = neighborEntity.getThemes()
+				.stream()
+				.filter(t -> t.getBlock() == theme.getBlock())
+				.findFirst()
+				.orElse(null);
+
+			return neighborTheme != null && neighborTheme.getBlock() == theme.getBlock();
+		}
+
+		return neighborState.getBlock() == theme.getBlock();
 	}
 	
 	@Override

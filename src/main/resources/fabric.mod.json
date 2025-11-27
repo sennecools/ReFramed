@@ -33,7 +33,6 @@
 	"suggests": {
 		"athena": "^${athena_version}",
 		"sodium": "^${sodium_version}",
-		"indium": "^${indium_version}",
 		"continuity": "^${continuity_version}"
 	}
 }
