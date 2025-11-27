@@ -130,17 +130,19 @@ public class ReFramedPostFenceBlock extends WaterloggableReFramedDoubleBlock {
         return getOutlineShape(state, view, pos, ShapeContext.absent());
     }
 
-    @Override
+    
     @SuppressWarnings("deprecation")
     public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
         return false;
     }
 
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ActionResult result = super.onUse(state, world, pos, player, hand, hit);
+    @Override
+    @SuppressWarnings("deprecation")
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        ActionResult result = super.onUse(state, world, pos, player, hit);
         if (result.isAccepted()) return result;
         if (world.isClient) {
-            ItemStack itemStack = player.getStackInHand(hand);
+            ItemStack itemStack = player.getStackInHand(Hand.MAIN_HAND);
             return itemStack.isOf(Items.LEAD) ? ActionResult.SUCCESS : ActionResult.PASS;
         } else {
             return LeadItem.attachHeldMobsToBlock(player, world, pos);

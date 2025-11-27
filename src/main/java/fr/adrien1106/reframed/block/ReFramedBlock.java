@@ -61,12 +61,19 @@ public class ReFramedBlock extends Block implements BlockEntityProvider {
 	
 	@Override
     @SuppressWarnings("deprecation")
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		if (!canUse(world, pos, player)) return ActionResult.PASS;
-		ActionResult result = BlockHelper.useUpgrade(state, world, pos, player, hand);
-		if (result.isAccepted()) return result;
-		return BlockHelper.useCamo(state, world, pos, player, hand, hit, 1);
 
+		// In 1.21.1, Hand parameter was removed from onUse. Try both hands.
+		for (Hand hand : Hand.values()) {
+			ActionResult result = BlockHelper.useUpgrade(state, world, pos, player, hand);
+			if (result.isAccepted()) return result;
+
+			result = BlockHelper.useCamo(state, world, pos, player, hand, hit, 1);
+			if (result.isAccepted()) return result;
+		}
+
+		return ActionResult.PASS;
 	}
 
 	protected boolean canUse(World world, BlockPos pos, PlayerEntity player) {
@@ -120,7 +127,8 @@ public class ReFramedBlock extends Block implements BlockEntityProvider {
 			if (old_frame_entity.isSolid() && !frame_entity.isSolid()) frame_entity.toggleSolidity();
 
 			// apply themes from item
-			NbtCompound tag = BlockItem.getBlockEntityNbt(stack);
+			net.minecraft.component.type.NbtComponent nbtComponent = stack.get(net.minecraft.component.DataComponentTypes.BLOCK_ENTITY_DATA);
+			NbtCompound tag = nbtComponent != null ? nbtComponent.copyNbt() : null;
 			if(tag != null) {
 				// determine a list of themes than can be used
 				Iterator<Integer> free_themes = IntStream
@@ -135,8 +143,9 @@ public class ReFramedBlock extends Block implements BlockEntityProvider {
 				}
 			}
 		} else if(world.isClient) { // prevents flashing with default texture before server sends the update
-			NbtCompound tag = BlockItem.getBlockEntityNbt(stack);
-			if(tag != null) frame_entity.readNbt(tag);
+			net.minecraft.component.type.NbtComponent nbtComponent2 = stack.get(net.minecraft.component.DataComponentTypes.BLOCK_ENTITY_DATA);
+			NbtCompound tag2 = nbtComponent2 != null ? nbtComponent2.copyNbt() : null;
+			if(tag2 != null) frame_entity.read(tag2, world.getRegistryManager());
 		}
 		onPlaced(world, pos, state, placer, stack);
 	}

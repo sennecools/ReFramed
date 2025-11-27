@@ -69,10 +69,19 @@ public abstract class ReFramedDoubleBlock extends ReFramedBlock {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    @SuppressWarnings("deprecation")
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (!canUse(world, pos, player)) return ActionResult.PASS;
-        ActionResult result = BlockHelper.useUpgrade(state, world, pos, player, hand);
-        if (result.isAccepted()) return result;
-        return BlockHelper.useCamo(state, world, pos, player, hand, hit, getHitShape(state, hit));
+
+        // In 1.21.1, Hand parameter was removed from onUse. Try both hands.
+        for (Hand hand : Hand.values()) {
+            ActionResult result = BlockHelper.useUpgrade(state, world, pos, player, hand);
+            if (result.isAccepted()) return result;
+
+            result = BlockHelper.useCamo(state, world, pos, player, hand, hit, getHitShape(state, hit));
+            if (result.isAccepted()) return result;
+        }
+
+        return ActionResult.PASS;
     }
 }

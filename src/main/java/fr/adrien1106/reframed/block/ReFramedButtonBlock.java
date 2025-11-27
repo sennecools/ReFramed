@@ -84,8 +84,9 @@ public class ReFramedButtonBlock extends WaterloggableReFramedBlock {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ActionResult result = super.onUse(state, world, pos, player, hand, hit);
+    @SuppressWarnings("deprecation")
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        ActionResult result = super.onUse(state, world, pos, player, hit);
         if (result.isAccepted()) return result;
 
         if (state.get(POWERED)) return ActionResult.CONSUME;
