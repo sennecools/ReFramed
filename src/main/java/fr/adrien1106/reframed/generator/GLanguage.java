@@ -9,12 +9,12 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class GLanguage extends FabricLanguageProvider {
-    protected GLanguage(FabricDataOutput dataOutput) {
-        super(dataOutput, "en_us");
+    protected GLanguage(FabricDataOutput dataOutput, java.util.concurrent.CompletableFuture<net.minecraft.registry.RegistryWrapper.WrapperLookup> registryLookup) {
+        super(dataOutput, "en_us", registryLookup);
     }
 
     @Override
-    public void generateTranslations(TranslationBuilder builder) {
+    public void generateTranslations(net.minecraft.registry.RegistryWrapper.WrapperLookup registryLookup, TranslationBuilder builder) {
         builder.add(Registries.ITEM_GROUP.getKey(ReFramed.ITEM_GROUP).get(), "Frames");
         builder.add("advancements.reframed.description", "Get all the frame types.");
         ReFramed.BLOCKS.forEach(block -> builder.add(block, beautify(Registries.BLOCK.getId(block).getPath()) + " Frame"));

@@ -60,8 +60,8 @@ public class GRecipe extends FabricRecipeProvider {
         providers.put(ReFramedScrewdriverItem.class, new Screwdriver());
     }
 
-    public GRecipe(FabricDataOutput output) {
-        super(output);
+    public GRecipe(FabricDataOutput output, java.util.concurrent.CompletableFuture<net.minecraft.registry.RegistryWrapper.WrapperLookup> registryLookup) {
+        super(output, registryLookup);
     }
 
     @Override

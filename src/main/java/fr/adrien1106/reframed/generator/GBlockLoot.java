@@ -7,8 +7,8 @@ import net.minecraft.registry.Registries;
 
 public class GBlockLoot extends FabricBlockLootTableProvider {
 
-    protected GBlockLoot(FabricDataOutput data_output) {
-        super(data_output);
+    protected GBlockLoot(FabricDataOutput data_output, java.util.concurrent.CompletableFuture<net.minecraft.registry.RegistryWrapper.WrapperLookup> registryLookup) {
+        super(data_output, registryLookup);
     }
 
     @Override

@@ -16,18 +16,18 @@ import net.minecraft.util.Identifier;
 import java.util.function.Consumer;
 
 public class GAdvancement extends FabricAdvancementProvider {
-    protected GAdvancement(FabricDataOutput output) {
-        super(output);
+    protected GAdvancement(FabricDataOutput output, java.util.concurrent.CompletableFuture<net.minecraft.registry.RegistryWrapper.WrapperLookup> registryLookup) {
+        super(output, registryLookup);
     }
 
     @Override
-    public void generateAdvancement(Consumer<AdvancementEntry> consumer) {
+    public void generateAdvancement(net.minecraft.registry.RegistryWrapper.WrapperLookup registryLookup, Consumer<AdvancementEntry> consumer) {
         Advancement.Builder builder = Advancement.Builder.create()
             .display(
                 Items.CAKE,
                 Text.literal("Is Everything A Lie ?"),
                 Text.translatable("advancements.reframed.description"),
-                new Identifier("textures/gui/advancements/backgrounds/adventure.png"),
+                Identifier.of("minecraft", "textures/gui/advancements/backgrounds/adventure.png"),
                 AdvancementFrame.TASK,
                 true,
                 true,
