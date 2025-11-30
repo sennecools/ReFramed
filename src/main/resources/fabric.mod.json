@@ -5,7 +5,8 @@
 	"name": "ReFramed",
 	"description": "A remake of forge framed blocks",
 	"authors": [
-		"Adrien1106"
+		"Adrien1106",
+        "Sennecools"
 	],
 	"contact": {},
 	"license": "MIT AND LGPL-3.0",
